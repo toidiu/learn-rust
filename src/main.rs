@@ -8,33 +8,12 @@ use std::io::Read;
 use quick_xml::reader::Reader;
 use quick_xml::events::Event;
 use hyper::Client;
-//use hyper::server::{Server, Request, Response};
-//use hyper::uri::RequestUri::AbsolutePath;
 
 fn main() {
-    //    fn hello(req: Request, res: Response) {
-    //        //        let e = AbsolutePath("/hi".to_string());
-    //        //        let q = AbsolutePath("/yo".to_string());
-    ////        match (req.method, req.uri) {
-    ////            //            //(&Get, "/") | (&Get, "/echo") => {
-    ////            //            (Get, AbsolutePath("/hi".to_string()))  => {
-    ////            //                res.send(b"Hello World!").unwrap();
-    ////            //            },
-    ////            //            (Get, q)  => {
-    ////            //                res.send(b"Hello dd!").unwrap();
-    ////            //            }
-    ////        }
-    //        res.send(b"Hello World!").unwrap();
-    //    }
-    //
-    //    Server::http("localhost:4000").unwrap().handle(hello).unwrap();
-
-    //    pretty_env_logger::init().unwrap();
     println!("=================================");
     let mut xml_resp = String::new();
     get_mta_status(&mut xml_resp);
     parse_xml(&xml_resp);
-
 
     fn get_mta_status(xml: &mut String) {
         let client = Client::new();
@@ -76,15 +55,13 @@ fn main() {
                             start = String::from("dont_print");
                             //println!("text: ")
                         }
-                        b"name" => {
-                            print!("name: ")
-                        }
+                        b"name" => print!("name: "),
                         b"status" => print!("status: "),
                         b"Date" => print!("date: "),
                         b"Time" => print!("time: "),
                         b"bus" => {
                             println!("end=======");
-                            break
+                            break;
                         }
                         _ => (),
                     }
@@ -104,6 +81,8 @@ fn main() {
             // if we don't keep a borrow elsewhere, we can clear the buffer to keep memory usage low
             buf.clear();
         }
-        //println!("{:?}", txt)i
+
+        // debug the mta response
+        // println!("{:?}", txt)
     }
 }
