@@ -11,7 +11,6 @@ fn main() {
     println!("=================================");
     let mut xml_resp = String::new();
     get_mta_status(&mut xml_resp);
-    // parse_xml(&xml_resp);
 }
 
 fn get_mta_status(xml: &mut String) {
