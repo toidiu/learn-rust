@@ -1,55 +1,39 @@
-#![deny(warnings)]
-extern crate futures;
-extern crate hyper;
-extern crate pretty_env_logger;
-extern crate quick_xml;
+extern crate reqwest;
+extern crate xml;
 
-use std::io::Read;
-use quick_xml::reader::Reader;
-use quick_xml::events::Event;
-use hyper::Client;
+use self::xml::reader::{EventReader, XmlEvent};
 
 fn main() {
-    println!("=================================");
-    let mut xml_resp = String::new();
-    get_mta_status(&mut xml_resp);
-    parse_xml(&xml_resp);
+    let xml = get_mta_status();
 
-    fn get_mta_status(xml: &mut String) {
-        let client = Client::new();
-        client
-            .get("http://web.mta.info/status/serviceStatus.txt")
-            .send()
-            .unwrap()
-            .read_to_string(xml)
-            .unwrap();
-        println!("hi");
-    }
+    // passing `String` wont work because String doesnt implement std::io::Read
+    // parse_xml(xml);
+    let readable: &[u8] = xml;
+    parse_xml(readable);
+}
 
-    fn parse_xml(xml: &str) {
-        let mut reader = Reader::from_str(&xml);
-        reader.trim_text(true);
+fn get_mta_status() -> String {
+    let body = reqwest::get("http://web.mta.info/status/serviceStatus.txt")
+        .unwrap()
+        .text()
+        .unwrap();
 
-        let mut buf = Vec::new();
+    // println!("{:?}", body);
+    body
+}
 
-        // The `Reader` does not implement `Iterator` because it outputs borrowed data (`Cow`xml_resp)
-        loop {
-            match reader.read_event(&mut buf) {
-                Ok(Event::Start(ref e)) => {
-                    println!("{:?}", e.unescape_and_decode(&reader).unwrap());
-                }
-                Ok(Event::Text(e)) => {
-                    println!("{}", e.unescape_and_decode(&reader).unwrap());
-                }
-                Ok(Event::Eof) => break, // exits the loop when reaching end of file
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
-                _ => (), // There are several other `Event`xml_resp we do not consider here
+fn parse_xml<T>(readable: T) where T: std::io::Read {
+    let reader = EventReader::new(readable);
+
+    for e in reader {
+        match e {
+            Ok(XmlEvent::StartElement { name, .. }) => print!("start: {}", name),
+            Ok(XmlEvent::EndElement { name }) => println!("    end: {}", name),
+            Err(e) => {
+                println!("Error: {}", e);
+                break;
             }
-
-            buf.clear();
+            _ => (),
         }
-
-        // debug the mta response
-        // println!("{:?}", txt)
     }
 }

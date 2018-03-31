@@ -1,11 +1,8 @@
 [package]
-name = "mta_status"
-version = "0.1.0"
-authors = ["toidiu <toidiu@protonmail.com>"]
+name = "teach-rust"
+version = "0.2.0"
+authors = ["toidiu <apoorv@toidiu.com>"]
 
 [dependencies]
-hyper = "0.10.11"
-futures = "0.1.14"
-tokio-core = "0.1.7"
-pretty_env_logger = "0.1.0"
-quick-xml = "0.7.3"
+reqwest = "0.8.5"
+xml-rs = "0.7"
