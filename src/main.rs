@@ -3,10 +3,14 @@
 extern crate reqwest;
 extern crate xml;
 
+use reqwest::Client;
+use reqwest::Response;
 use self::xml::reader::{EventReader, XmlEvent};
 
 fn main() {
-    let xml = get_mta_status();
+    let client = Client::new();
+
+    let xml: String = get_mta_status(&client);
 
     // passing `String` wont work because String doesnt implement std::io::Read
     // parse_xml(xml);
@@ -14,13 +18,14 @@ fn main() {
     parse_xml(readable);
 }
 
-fn get_mta_status() -> String {
-    let body = reqwest::get("http://web.mta.info/status/serviceStatus.txt")
-        .unwrap()
-        .text()
+fn get_mta_status(client: &Client) -> String {
+    let mut resp: Response = client
+        .get("http://web.mta.info/status/serviceStatus.txt")
+        .send()
         .unwrap();
+    let body: String = resp.text().unwrap();
 
-    // println!("{:?}", body);
+    println!("{:?}", body);
     body
 }
 
