@@ -1,11 +1,9 @@
-#![deny(warnings)]
-
 extern crate reqwest;
 extern crate xml;
 
+use self::xml::reader::{EventReader, XmlEvent};
 use reqwest::Client;
 use reqwest::Response;
-use self::xml::reader::{EventReader, XmlEvent};
 
 fn main() {
     let client = Client::new();
@@ -15,7 +13,10 @@ fn main() {
     // passing `String` wont work because String doesnt implement std::io::Read
     // parse_xml(xml);
     let readable: &[u8] = xml.as_bytes();
-    parse_xml(readable);
+    let lines = parse_xml(readable);
+    for line in lines.iter() {
+        println!("{:?}", line);
+    };
 }
 
 fn get_mta_status(client: &Client) -> String {
@@ -28,10 +29,23 @@ fn get_mta_status(client: &Client) -> String {
     body
 }
 
+struct Line {
+    name: String,
+    status: String,
+}
+
+impl Line {
+    fn empty() -> Line {
+        Line {
+            name: "".into(),
+            status: "".into(),
+        }
+    }
+}
+
 /// Because we are using a XML event streaming
 /// library we need to maintain state of which
 /// tag we are processing.
-#[derive(PartialEq)]
 enum XmlTag {
     TimeStamp,
     LineName,
@@ -39,7 +53,7 @@ enum XmlTag {
     Ignore,
 }
 
-fn parse_xml<T>(readable: T)
+fn parse_xml<T>(readable: T) -> Vec<Line>
 where
     T: std::io::Read,
 {
@@ -48,11 +62,23 @@ where
     // We set it to a default value or `Ignore`.
     let mut xml_tag: XmlTag = XmlTag::Ignore;
 
+    //TODO Populate the `Vec` by `push`ing `temp_line` elements
+    // into it.
+    let lines = Vec::new();
+
+    let temp_line = Line::empty();
+
     for e in reader {
+
         match e {
             Ok(XmlEvent::StartElement { name, .. }) => {
                 let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
+                    "line" => {
+                        //FIXME
+                        temp_line = Line::empty();
+                    }
+
                     "timestamp" => {
                         xml_tag = XmlTag::TimeStamp;
                         print!("{}: ", name);
@@ -60,12 +86,10 @@ where
 
                     "name" => {
                         xml_tag = XmlTag::LineName;
-                        print!("{}: ", name);
                     }
 
                     "status" => {
                         xml_tag = XmlTag::LineStatus;
-                        print!("{}: ", name);
                     }
 
                     _ => {
@@ -74,16 +98,25 @@ where
                 }
             }
 
-            Ok(XmlEvent::Characters(name)) => match xml_tag {
-                XmlTag::TimeStamp => println!("{}", name),
-                XmlTag::LineName => println!("{}", name),
-                XmlTag::LineStatus => println!("{}", name),
+            Ok(XmlEvent::Characters(txt)) => match xml_tag {
+                XmlTag::TimeStamp => println!("{}", txt),
+
+                XmlTag::LineName => {
+                }
+
+                XmlTag::LineStatus => {
+                }
+
                 _ => (),
             },
 
             Ok(XmlEvent::EndElement { name }) => {
                 let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
+                    "line" => {
+                        //FIXME
+                    }
+
                     // we only care about subway
                     "subway" => break,
 
@@ -99,4 +132,6 @@ where
             _ => (),
         }
     }
+
+    lines
 }
