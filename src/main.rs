@@ -23,10 +23,7 @@ fn get_mta_status(client: &Client) -> String {
         .get("http://web.mta.info/status/serviceStatus.txt")
         .send()
         .unwrap();
-    let body: String = resp.text().unwrap();
-
-    println!("{:?}", body);
-    body
+    resp.text().unwrap()
 }
 
 /// Because we are using a XML event streaming
