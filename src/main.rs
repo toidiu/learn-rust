@@ -29,6 +29,9 @@ fn get_mta_status(client: &Client) -> String {
     body
 }
 
+/// Because we are using a XML event streaming
+/// library we need to maintain state of which
+/// tag we are processing.
 #[derive(PartialEq)]
 enum XmlTag {
     TimeStamp,
@@ -42,6 +45,8 @@ where
     T: std::io::Read,
 {
     let reader = EventReader::new(readable);
+    // This will hold the current tag we are processing.
+    // We set it to a default value or `Ignore`.
     let mut xml_tag: XmlTag = XmlTag::Ignore;
 
     for e in reader {
