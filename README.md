@@ -8,7 +8,7 @@ An interactive guide to learning Rust!
 - Install [rust](https://www.rust-lang.org/en-US/install.html)
 
 ## Tools
-[`cargo`](https://doc.rust-lang.org/cargo/) is Rust's package manager and part of the Rust instalation.
+[`cargo`](https://doc.rust-lang.org/cargo/) is Rust's package manager and part of the Rust installation.
 You can use it to access public packages on https://crates.io, create new packages 
 or [format](https://github.com/rust-lang-nursery/rustfmt) your code.
 
