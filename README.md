@@ -1,4 +1,4 @@
-The goal of this project is to learn how to learn Rust!
+An interactive guide to learning Rust!
 
 - It requires you to look at the [docs](https://doc.rust-lang.org/std/)!
 - It requires you to search the [web](http://www.letmegooglethat.com/?q=rust).
