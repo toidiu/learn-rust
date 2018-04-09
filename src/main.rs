@@ -29,6 +29,7 @@ fn get_mta_status(client: &Client) -> String {
     body
 }
 
+#[derive(Debug)]
 struct Line {
     name: String,
     status: String,
@@ -62,11 +63,9 @@ where
     // We set it to a default value or `Ignore`.
     let mut xml_tag: XmlTag = XmlTag::Ignore;
 
-    //TODO Populate the `Vec` by `push`ing `temp_line` elements
-    // into it.
-    let lines = Vec::new();
+    let mut lines = Vec::new();
 
-    let temp_line = Line::empty();
+    let mut temp_line = Line::empty();
 
     for e in reader {
 
@@ -74,11 +73,6 @@ where
             Ok(XmlEvent::StartElement { name, .. }) => {
                 let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
-                    "line" => {
-                        //FIXME
-                        temp_line = Line::empty();
-                    }
-
                     "timestamp" => {
                         xml_tag = XmlTag::TimeStamp;
                         print!("{}: ", name);
@@ -102,9 +96,11 @@ where
                 XmlTag::TimeStamp => println!("{}", txt),
 
                 XmlTag::LineName => {
+                    temp_line.name = txt;
                 }
 
                 XmlTag::LineStatus => {
+                    temp_line.status = txt;
                 }
 
                 _ => (),
@@ -114,7 +110,8 @@ where
                 let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
                     "line" => {
-                        //FIXME
+                        lines.push(temp_line);
+                        temp_line = Line::empty();
                     }
 
                     // we only care about subway
