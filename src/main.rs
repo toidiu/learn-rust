@@ -25,7 +25,6 @@ fn get_mta_status(client: &Client) -> String {
         .unwrap();
     let body: String = resp.text().unwrap();
 
-    println!("{:?}", body);
     body
 }
 
@@ -52,7 +51,7 @@ where
     for e in reader {
         match e {
             Ok(XmlEvent::StartElement { name, .. }) => {
-                let ref_name: &str = name.local_name;
+                let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
                     "timestamp" => {
                         xml_tag = XmlTag::TimeStamp;
@@ -61,6 +60,11 @@ where
 
                     "name" => {
                         xml_tag = XmlTag::LineName;
+                        print!("{}: ", name);
+                    }
+
+                    "status" => {
+                        xml_tag = XmlTag::LineStatus;
                         print!("{}: ", name);
                     }
 
@@ -73,11 +77,12 @@ where
             Ok(XmlEvent::Characters(name)) => match xml_tag {
                 XmlTag::TimeStamp => println!("{}", name),
                 XmlTag::LineName => println!("{}", name),
+                XmlTag::LineStatus => println!("{}", name),
                 _ => (),
             },
 
             Ok(XmlEvent::EndElement { name }) => {
-                let ref_name: &str = name.local_name;
+                let ref_name: &str = name.local_name.as_ref();
                 match ref_name {
                     // we only care about subway
                     "subway" => break,
