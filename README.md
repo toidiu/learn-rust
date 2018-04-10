@@ -12,14 +12,12 @@ An interactive guide to learning Rust!
 You can use it to access public packages on https://crates.io, create new packages 
 or [format](https://github.com/rust-lang-nursery/rustfmt) your code.
 
-For now all you care about is `cargo run`
-
 ## Steps:
-Start at branch `step1` (default branch)
+The goal is to fix/enhance the piece of code in each branch. Start at branch `step1` (default branch after checking out).
 
-- Use [`cargo watch`](https://github.com/passcod/cargo-watch) or 
-`cargo watch -x run` and try to get the program to compile at each step.
-- Once the program compiles move onto the next branch `step1` -> `step1.1` -> `step2` -> `step2.1` -> `step3`
+- Try to get the program to compile at each step. You can use `cargo run`, [`cargo watch`](https://github.com/passcod/cargo-watch) or `cargo watch -x run` to achieve that feat.
+- Once the program compiles move onto the next branch `step1` -> `step1.1` -> `step2` -> `step2.1` -> `step3`.
+- If you get stuck, try the docs, web, or IRC.
 
 
 ---
